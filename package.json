@@ -1,0 +1,31 @@
+{
+  "name": "stream-train",
+  "version": "0.1.0",
+  "description": "Make transform stream chain easier",
+  "keywords": [
+    "transform-stream",
+    "stream",
+    "chain"
+  ],
+  "main": "index.js",
+  "files": [
+    "index.js"
+  ],
+  "scripts": {
+    "lint": "eslint . --ext .js --fix --cache",
+    "test": "tnpm run lint && mocha -t 5000 test/*.js"
+  },
+  "devDependencies": {
+    "eslint": "^3.7.1",
+    "eslint-config-egg": "^3.r.0",
+    "mocha": "^3.1.2",
+    "through2": "^2.0.1",
+    "vinyl-fs": "^2.4.4"
+  },
+  "engines": {
+    "node": ">= 4.0.0"
+  },
+  "dependencies": {
+    "readable-stream": "^2.1.5"
+  }
+}
