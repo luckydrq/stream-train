@@ -6,7 +6,7 @@ Make stream pipeline a little easier to use(objectMode only).
 
 ## Advantages
 
-### Forward errors in pipeline which won't happen in normal cases
+### Forward errors along the pipeline
 
 Consider the following code snippet:
 
@@ -17,7 +17,7 @@ stream1
   .on('error', e => console.error(e));
 ```
 
-This is a normal case of using stream pipelines. You would only catch the error emitted by `stream3`, because errors **do not forward** in node official stream implementation. This pkg makes a little effort and forward all the errors for you.
+This is a normal use case of stream pipelines. You would only catch the error emitted by `stream3`, because errors **do not forward** in node official stream implementation. This package makes a little effort and forward all the errors for you.
 
 ```js
 new Train()
@@ -32,7 +32,7 @@ new Train()
 
 ### Won't break pipeline when error occurs
 
-Once an error occurs, upstream will invoke [.unpipe() method](https://github.com/nodejs/readable-stream/blob/master/lib/_stream_readable.js#L563) which results in disconnect between upstream and downstream meaning that the pipeline would break. But in real world, we use streams with `{ objectMode: true }` to process object that is completely isolate from the others. If one failed, we just do some logs and expect the pipeline to go on. This pkg will do the trick for you.
+When the target stream encounts an error, the source stream will invoke [.unpipe() method](https://github.com/nodejs/readable-stream/blob/master/lib/_stream_readable.js#L563) that will disconnect itself from the target stream, then the whole pipeline breaks. But in real world, we use streams with `{ objectMode: true }` to process object that is completely isolated from each other. If one fails, we just do some logs and expect the pipeline to go on. This package does the trick for you.
 
 ```js
 new Train()
@@ -63,6 +63,7 @@ $ npm i stream-train --save
 - options.seed: Original object you want to pass down to the stream pipeline, optional.
 
 ```js
+const Train = require('stream-train');
 const file = { path: '/Users/foo/a.js' };
 new Train({ seed: file })
   .push(through2.obj(function(file, enc, cb) {
@@ -93,6 +94,9 @@ Emitted when any stream in the pipeline emit `error` event.
 
 ### info
 Emitted when any stream in the pipeline emit `info` event.
+
+### finish
+Emitted when pipeline finish piping.
 
 ## LICENSE
 MIT
