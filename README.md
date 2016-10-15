@@ -35,7 +35,6 @@ new Train()
 Once an error occurs, upstream will invoke [.unpipe() method](https://github.com/nodejs/readable-stream/blob/master/lib/_stream_readable.js#L563) which results in disconnect between upstream and downstream meaning that the pipeline would break. But in real world, we use streams with `{ objectMode: true }` to process object that is completely isolate from the others. If one failed, we just do some logs and expect the pipeline to go on. This pkg will do the trick for you.
 
 ```js
-const Train = require('stream-train');
 new Train()
   .push(through2.obj(function(chunk, enc, cb) {
     this.emit('error', new Error('oops!'));
