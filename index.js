@@ -92,6 +92,7 @@ class Train extends EventEmitter {
             // remove .unpipe() logic from official implementation
             // If the target stream emits an error, the source stream will disconnect from it (ie, .unpipe() itself from the target stream).
             // https://github.com/nodejs/readable-stream/blob/master/lib/_stream_readable.js#L69
+            // ¯\_(ツ)_/¯
             const errorEvents = stream._events.error;
             if (Array.isArray(errorEvents)) {
               if (errorEvents[0].name === 'onerror') {
