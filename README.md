@@ -10,6 +10,8 @@ Make stream pipeline a little easier to use(objectMode only).
 
 Consider the following code snippet:
 
+¯\_(ツ)_/¯
+
 ```js
 stream1
   .pipe(stream2)
