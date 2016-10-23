@@ -130,4 +130,48 @@ describe('test/train.test.js', () => {
         done();
       });
   });
+
+  it('should support .if', done => {
+    const seed = { count: 1 };
+    const train = new Train({ seed });
+
+    train
+      .if(true)
+        .push(through2.obj(function(chunk, enc, cb) {
+          chunk.count++;
+          this.push(chunk);
+          cb();
+        }))
+      .endif()
+      .push(through2.obj(function(chunk, enc, cb) {
+        chunk.count++;
+        cb();
+      }))
+      .run(() => {
+        assert(seed.count === 3);
+        done();
+      });
+  });
+
+  it('should call .endif to close if condition', done => {
+    const seed = { count: 1 };
+    const train = new Train({ seed });
+
+    train
+      .if(true)
+        .push(through2.obj(function(chunk, enc, cb) {
+          chunk.count++;
+          this.push(chunk);
+          cb();
+        }))
+      .push(through2.obj(function(chunk, enc, cb) {
+        chunk.count++;
+        cb();
+      }))
+      .run()
+      .catch(e => {
+        assert(e.message.indexOf('should call .endif() explicitly') > -1);
+        done();
+      });
+  });
 });

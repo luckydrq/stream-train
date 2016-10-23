@@ -84,6 +84,22 @@ Prepend a stream instance to internal list, it's chainable.
 ### .delete(stream)
 Delete a stream instance from internal list, it's chainable.
 
+### .if(condition)
+Sometimes we may add additional steps according to some condition, this api allows you to add stream conditionally.
+
+```js
+new Train()
+  .push(stream1)
+  .if(condition)
+    .push(stream2)
+  .endif()
+  .push(stream3)
+  .run();
+```
+
+### .endif()
+Invoked when condition block need to close. It has to be paired with `.if()`.
+
 ### .run(callback)
 Start the pipeline, accept optional argument `callback` which is invoked when pipeline finish. Return a Promise.
 
