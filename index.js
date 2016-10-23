@@ -12,15 +12,39 @@ class Train extends EventEmitter {
     options = options || {};
     this._streams = [];
     this._seed = options.seed;
+    this._enterIf = false;
+    this._ifOK = undefined;
   }
 
   get length() {
     return this._streams.length;
   }
 
+  if(condition) {
+    if (this._enterIf) {
+      throw new Error('.if cannot be nested');
+    }
+
+    this._enterIf = true;
+    this._ifOK = !!condition;
+    return this;
+  }
+
+  endif() {
+    this._enterIf = false;
+    this._ifOK = undefined;
+    return this;
+  }
+
   push(stream) {
     assert(stream.readable, 'stream passed in should be readable!');
-    this._streams.push(stream);
+    if (this._enterIf) {
+      if (this._ifOK) {
+        this._streams.push(stream);
+      }
+    } else {
+      this._streams.push(stream);
+    }
     return this;
   }
 
@@ -54,6 +78,13 @@ class Train extends EventEmitter {
   }
 
   run(callback) {
+    if (this._enterIf) {
+      // forgot to invoke .endif(), throw error
+      const err = new Error('should call .endif() explicitly');
+      callback && callback(err);
+      return Promise.reject(err);
+    }
+
     if (!this.length) {
       callback && callback();
       return Promise.resolve();
@@ -92,7 +123,6 @@ class Train extends EventEmitter {
             // remove .unpipe() logic from official implementation
             // If the target stream emits an error, the source stream will disconnect from it (ie, .unpipe() itself from the target stream).
             // https://github.com/nodejs/readable-stream/blob/master/lib/_stream_readable.js#L69
-            // ¯\_(ツ)_/¯
             const errorEvents = stream._events.error;
             if (Array.isArray(errorEvents)) {
               if (errorEvents[0].name === 'onerror') {
