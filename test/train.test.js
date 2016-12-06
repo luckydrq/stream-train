@@ -74,6 +74,26 @@ describe('test/train.test.js', () => {
       .run(done);
   });
 
+  it('should emit error when through2 cb error', done => {
+    const train = new Train();
+    const stream1 = new Readable({
+      objectMode: true,
+      read() {},
+    });
+    stream1.push(1);
+
+    train
+      .push(stream1)
+      .push(through2.obj(function(chunk, enc, cb) {
+        cb(new Error('through2 error'));
+      }))
+      .on('error', e => {
+        assert(e.message === 'through2 error');
+        done();
+      })
+      .run();
+  });
+
   it('should emit info', done => {
     const train = new Train();
     const stream1 = new Readable({
